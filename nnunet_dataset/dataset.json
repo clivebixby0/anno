@@ -1,0 +1,15 @@
+{
+  "channel_names": {
+    "0": "image"
+  },
+  "labels": {
+    "background": 0,
+    "cyst": 1,
+    "kidney": 2
+  },
+  "numTraining": 309,
+  "file_ending": ".png",
+  "dataset_name": "KidneyCyst",
+  "reference": "Converted from COCO format",
+  "description": "Kidney cyst segmentation dataset"
+}
