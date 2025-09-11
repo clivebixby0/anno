@@ -164,14 +164,13 @@ def convert_coco_to_nnunet(coco_json_path, images_dir_path, output_dir):
                 annotations_by_image[img_id] = []
             annotations_by_image[img_id].append(ann)
         
-        print(f"\nProcessing {len(annotations_by_image)} images with annotations...")
+        print(f"\nProcessing {len(coco_data['images'])} images (including {len(annotations_by_image)} with annotations)...")
         
-        for i, (img_id, annotations) in enumerate(annotations_by_image.items()):
-            if img_id not in image_id_to_info:
-                continue
-                
-            img_info = image_id_to_info[img_id]
+        # Process ALL images, not just those with annotations
+        for i, img_info in enumerate(coco_data['images']):
+            img_id = img_info['id']
             case_id = f"case{i+1:03d}"
+            annotations = annotations_by_image.get(img_id, [])  # Empty list if no annotations
             
             # Copy and rename image
             src_img_path = Path(images_dir_path) / img_info['file_name']
@@ -191,21 +190,24 @@ def convert_coco_to_nnunet(coco_json_path, images_dir_path, output_dir):
             height, width = img_info['height'], img_info['width']
             combined_mask = np.zeros((height, width), dtype=np.uint8)
             
-            # Group annotations by category
-            kidney_annotations = [ann for ann in annotations if ann.get('category_id') == 2]
-            cyst_annotations = [ann for ann in annotations if ann.get('category_id') == 1]
-            
-            # First process cyst annotations (value 2)
-            for ann in cyst_annotations:
-                if 'segmentation' in ann:
-                    mask = decode_rle_mask(ann['segmentation'], height, width)
-                    combined_mask[mask > 0] = 2  # cyst = 2
-            
-            # Then process kidney annotations (value 1, overwrites cyst where they overlap)
-            for ann in kidney_annotations:
-                if 'segmentation' in ann:
-                    mask = decode_rle_mask(ann['segmentation'], height, width)
-                    combined_mask[mask > 0] = 1  # kidney = 1
+            # Only process annotations if they exist
+            if annotations:
+                # Group annotations by category
+                kidney_annotations = [ann for ann in annotations if ann.get('category_id') == 2]
+                cyst_annotations = [ann for ann in annotations if ann.get('category_id') == 1]
+                
+                # First process kidney annotations (value 1)
+                for ann in kidney_annotations:
+                    if 'segmentation' in ann:
+                        mask = decode_rle_mask(ann['segmentation'], height, width)
+                        combined_mask[mask > 0] = 1  # kidney = 1
+                
+                # Then process cyst annotations (value 2, overwrites kidney where they overlap)
+                for ann in cyst_annotations:
+                    if 'segmentation' in ann:
+                        mask = decode_rle_mask(ann['segmentation'], height, width)
+                        combined_mask[mask > 0] = 2  # cyst = 2
+            # If no annotations, combined_mask remains all zeros (background)
             
             # Save mask as PNG
             mask_img = Image.fromarray(combined_mask)
