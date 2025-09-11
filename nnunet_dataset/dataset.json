@@ -4,8 +4,8 @@
   },
   "labels": {
     "background": 0,
-    "cyst": 1,
-    "kidney": 2
+    "kidney": 1,
+    "cyst": 2
   },
   "numTraining": 309,
   "file_ending": ".png",

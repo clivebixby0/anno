@@ -65,7 +65,8 @@ for i, img_id in enumerate(mixed_images[:check_count]):
 
 print(f"\n=== Overlay Priority Verification ===\n")
 print("Current processing order:")
-print("1. Kidney annotations processed first (value 2)")
-print("2. Cyst annotations processed second (value 1)")
-print("3. In overlapping regions: CYST takes priority over KIDNEY")
-print("\nThis means cyst regions will appear as value 1 even where they overlap with kidneys.")
+print("1. Cyst annotations processed first (value 2)")
+print("2. Kidney annotations processed second (value 1)")
+print("3. In overlapping regions: KIDNEY takes priority over CYST")
+print("\nThis means kidney regions will appear as value 1 even where they overlap with cysts.")
+print("\nIn the masks: 0=background, 1=kidney, 2=cyst")

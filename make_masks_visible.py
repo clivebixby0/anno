@@ -24,11 +24,11 @@ for i, mask_file in enumerate(mask_files, 1):
     
     # Scale values for visibility:
     # Background (0) -> 0 (black)
-    # Cyst (1) -> 128 (gray) 
-    # Kidney (2) -> 255 (white)
+    # Kidney (1) -> 128 (gray) 
+    # Cyst (2) -> 255 (white)
     visible_mask[mask == 0] = 0    # Background stays black
-    visible_mask[mask == 1] = 128  # Cyst -> gray
-    visible_mask[mask == 2] = 255  # Kidney -> white
+    visible_mask[mask == 1] = 128  # Kidney -> gray
+    visible_mask[mask == 2] = 255  # Cyst -> white
     
     # Save visible version
     visible_path = os.path.join(visible_dir, mask_file)
@@ -40,7 +40,7 @@ for i, mask_file in enumerate(mask_files, 1):
 print(f"\nDone! Visible masks saved to: {visible_dir}")
 print("\nIn the visible versions:")
 print("- Black = Background (original value 0)")
-print("- Gray = Cyst (original value 1)")
-print("- White = Kidney (original value 2)")
+print("- Gray = Kidney (original value 1)")
+print("- White = Cyst (original value 2)")
 print("\nThe original masks in labelsTr are CORRECT for nnU-Net training!")
 print("They appear black because nnU-Net uses integer values 0,1,2 not RGB colors.")

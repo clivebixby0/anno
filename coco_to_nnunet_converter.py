@@ -195,17 +195,17 @@ def convert_coco_to_nnunet(coco_json_path, images_dir_path, output_dir):
             kidney_annotations = [ann for ann in annotations if ann.get('category_id') == 2]
             cyst_annotations = [ann for ann in annotations if ann.get('category_id') == 1]
             
-            # First process kidney annotations (value 2)
-            for ann in kidney_annotations:
-                if 'segmentation' in ann:
-                    mask = decode_rle_mask(ann['segmentation'], height, width)
-                    combined_mask[mask > 0] = 2  # kidney = 2
-            
-            # Then process cyst annotations (value 1, overwrites kidney where they overlap)
+            # First process cyst annotations (value 2)
             for ann in cyst_annotations:
                 if 'segmentation' in ann:
                     mask = decode_rle_mask(ann['segmentation'], height, width)
-                    combined_mask[mask > 0] = 1  # cyst = 1
+                    combined_mask[mask > 0] = 2  # cyst = 2
+            
+            # Then process kidney annotations (value 1, overwrites cyst where they overlap)
+            for ann in kidney_annotations:
+                if 'segmentation' in ann:
+                    mask = decode_rle_mask(ann['segmentation'], height, width)
+                    combined_mask[mask > 0] = 1  # kidney = 1
             
             # Save mask as PNG
             mask_img = Image.fromarray(combined_mask)
@@ -214,15 +214,15 @@ def convert_coco_to_nnunet(coco_json_path, images_dir_path, output_dir):
             processed_images.add(img_id)
     
     # Create dataset.json for nnU-Net v2
-    # Updated mapping: 0=background, 1=cyst, 2=kidney
+    # Updated mapping: 0=background, 1=kidney, 2=cyst
     dataset_json = {
         "channel_names": {
             "0": "image"
         },
         "labels": {
             "background": 0,
-            "cyst": 1,
-            "kidney": 2
+            "kidney": 1,
+            "cyst": 2
         },
         "numTraining": len(processed_images),
         "file_ending": ".png",
