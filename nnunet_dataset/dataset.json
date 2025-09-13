@@ -1,15 +1,18 @@
 {
+  "name": "KidneyDisease_Coronal",
   "channel_names": {
-    "0": "image"
+    "0": "CT"
   },
   "labels": {
     "background": 0,
     "kidney": 1,
-    "cyst": 2
+    "cyst": 2,
+    "tumor": 3,
+    "stone": 4
   },
   "numTraining": 309,
   "file_ending": ".png",
-  "dataset_name": "KidneyCyst",
-  "reference": "Converted from COCO format",
-  "description": "Kidney cyst segmentation dataset"
+  "dataset_name": "KidneyDisease_Coronal",
+  "reference": "Merged axial CT datasets",
+  "description": "Axial kidney CT: kidney, cyst"
 }
